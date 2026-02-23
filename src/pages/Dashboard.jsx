@@ -96,25 +96,35 @@ export default function Dashboard() {
       >
         <div>
           <div className="card">
-            <h2 style={{ marginTop: 0 }}>
-              🔥 Current Streak: {calculateStreak(checkins)} days
-            </h2>
-
-            {todayGoal ? (
-              <div style={{ marginTop: 12 }}>
-                <h3 style={{ margin: "6px 0" }}>{todayGoal.title}</h3>
-                <p style={{ color: "#6b7280" }}>{todayGoal.task}</p>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
+              <div>
+                <div className="stat">
+                  <div className="value">{calculateStreak(checkins)}</div>
+                  <div className="label">Current Streak</div>
+                </div>
+                {todayGoal ? (
+                  <div style={{ marginTop: 12 }}>
+                    <div className="goal-title">{todayGoal.title}</div>
+                    <p className="goal-date">{todayGoal.task}</p>
+                  </div>
+                ) : (
+                  <div style={{ marginTop: 12, color: "#6b7280" }}>
+                    No goal set for today.
+                  </div>
+                )}
               </div>
-            ) : (
-              <div style={{ marginTop: 12, color: "#6b7280" }}>
-                No goal set for today.
-              </div>
-            )}
 
-            <div style={{ marginTop: 16 }}>
-              <button className="btn btn-primary" onClick={handleCheckIn}>
-                Check In
-              </button>
+              <div>
+                <button className="btn btn-primary" onClick={handleCheckIn}>
+                  Check In
+                </button>
+              </div>
             </div>
           </div>
 
