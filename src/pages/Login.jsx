@@ -11,6 +11,10 @@ export default function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!email || !password) {
+      return alert("Please enter both email and password");
+    }
+
     try {
       setLoading(true);
       const res = await API.post("/auth/login", { email, password });
@@ -165,7 +169,10 @@ export default function Login() {
               alignItems: "center",
             }}
           >
-            <button className="btn btn-primary" disabled={loading}>
+            <button
+              className="btn btn-primary"
+              disabled={loading || !email || !password}
+            >
               {loading ? "Signing in..." : "Sign In"}
             </button>
             <button
