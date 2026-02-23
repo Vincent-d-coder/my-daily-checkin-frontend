@@ -10,21 +10,42 @@ function PrivateRoute({ children }) {
   return localStorage.getItem("token") ? children : <Navigate to="/login" />;
 }
 
+function PublicRoute({ children }) {
+  return localStorage.getItem("token") ? (
+    <Navigate to="/dashboard" />
+  ) : (
+    children
+  );
+}
+
 export default function App() {
   const location = useLocation();
   const isLoggedIn = localStorage.getItem("token");
 
   const hideNavbar =
-    location.pathname === "/login" ||
-    location.pathname === "/register";
+    location.pathname === "/login" || location.pathname === "/register";
 
   return (
     <>
       {isLoggedIn && !hideNavbar && <Navbar />}
 
       <Routes>
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
+        <Route
+          path="/login"
+          element={
+            <PublicRoute>
+              <Login />
+            </PublicRoute>
+          }
+        />
+        <Route
+          path="/register"
+          element={
+            <PublicRoute>
+              <Register />
+            </PublicRoute>
+          }
+        />
 
         <Route
           path="/dashboard"
