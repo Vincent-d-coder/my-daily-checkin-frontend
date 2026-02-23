@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import API from "../services/api";
 import CheckInCard from "../components/CheckInCard";
 
@@ -6,6 +7,9 @@ export default function Dashboard() {
   const [todayGoal, setTodayGoal] = useState(null);
   const [checkins, setCheckins] = useState([]);
   const [upcomingGoals, setUpcomingGoals] = useState([]);
+  const [selectedGoalId, setSelectedGoalId] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const navigate = useNavigate();
   console.log("set checkins");
   console.log(checkins);
 
@@ -30,11 +34,15 @@ export default function Dashboard() {
 
   const handleCheckIn = async () => {
     try {
-      // ensure there's a goal for today; create one if missing
-      let goalId = todayGoal?._id;
+      // require a selected goal (or explicit 'new' to create one)
+      if (!selectedGoalId)
+        return alert("Please select a goal (or choose 'Create new')");
 
-      if (!goalId) {
-        // send an empty object so backend receives a defined req.body
+      const wasCreatingNew = selectedGoalId === "new";
+      let goalId = selectedGoalId;
+
+      if (wasCreatingNew) {
+        // create today's goal (backend fills defaults)
         const res = await API.post("/goals/today", {});
         setTodayGoal(res.data);
         goalId = res.data._id;
@@ -46,7 +54,13 @@ export default function Dashboard() {
         goalId,
       });
 
-      loadData();
+      // refresh
+      setSelectedGoalId("");
+      await loadData();
+
+      if (wasCreatingNew) {
+        navigate("/goals");
+      }
     } catch (err) {
       console.error(err);
       alert(err?.response?.data?.message || err?.message || "Check-in failed");
@@ -121,7 +135,10 @@ export default function Dashboard() {
               </div>
 
               <div>
-                <button className="btn btn-primary" onClick={handleCheckIn}>
+                <button
+                  className="btn btn-primary"
+                  onClick={() => setIsModalOpen(true)}
+                >
                   Check In
                 </button>
               </div>
@@ -172,6 +189,74 @@ export default function Dashboard() {
           </div>
         </aside>
       </div>
+      {isModalOpen && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          style={{
+            position: "fixed",
+            inset: 0,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            background: "rgba(0,0,0,0.45)",
+            zIndex: 60,
+            padding: 20,
+          }}
+          onClick={() => setIsModalOpen(false)}
+        >
+          <div
+            className="card"
+            style={{
+              width: "min(760px, 96%)",
+              maxWidth: 760,
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h2 style={{ marginTop: 0 }}>Check In</h2>
+
+            <div style={{ display: "grid", gap: 12 }}>
+              <label style={{ fontSize: 13, color: "#374151" }}>
+                Select goal
+              </label>
+              <select
+                className="input"
+                value={selectedGoalId}
+                onChange={(e) => setSelectedGoalId(e.target.value)}
+              >
+                <option value="">-- Select a goal --</option>
+                <option value="new">Create new goal for today</option>
+                {upcomingGoals.map((g) => (
+                  <option key={g._id} value={g._id}>
+                    {g.title} — {new Date(g.date).toDateString()}
+                  </option>
+                ))}
+              </select>
+
+              <div
+                style={{ display: "flex", gap: 8, justifyContent: "flex-end" }}
+              >
+                <button
+                  className="btn btn-ghost"
+                  onClick={() => setIsModalOpen(false)}
+                >
+                  Cancel
+                </button>
+                <button
+                  className="btn btn-primary"
+                  onClick={async () => {
+                    await handleCheckIn();
+                    setIsModalOpen(false);
+                  }}
+                  disabled={!selectedGoalId}
+                >
+                  Confirm Check In
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
