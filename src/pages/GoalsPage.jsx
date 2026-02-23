@@ -26,19 +26,30 @@ export default function GoalsPage() {
   };
 
   return (
-    <div>
+    <div className="container">
       <h1>Goals</h1>
 
-      <GoalForm reload={loadGoals} />
+      <div className="card">
+        <GoalForm reload={loadGoals} />
+      </div>
 
-      {goals.map((goal) => (
-        <GoalCard
-          key={goal._id}
-          goal={goal}
-          deleteGoal={deleteGoal}
-          updateGoal={updateGoal}
-        />
-      ))}
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
+          gap: 16,
+          marginTop: 16,
+        }}
+      >
+        {goals.map((goal) => (
+          <GoalCard
+            key={goal._id}
+            goal={goal}
+            deleteGoal={deleteGoal}
+            updateGoal={updateGoal}
+          />
+        ))}
+      </div>
     </div>
   );
 }

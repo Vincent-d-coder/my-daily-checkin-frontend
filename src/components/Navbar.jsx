@@ -9,10 +9,17 @@ export default function Navbar() {
   };
 
   return (
-    <nav style={{ padding: "20px", borderBottom: "1px solid gray" }}>
-      <Link to="/dashboard">Dashboard</Link> |{" "}
-      <Link to="/goals">Goals</Link> |{" "}
-      <button onClick={logout}>Logout</button>
+    <nav>
+      <div className="nav-inner">
+        <div style={{ fontWeight: 800, color: "#1f2d3d" }}>Daily Check-In</div>
+        <div className="nav-links">
+          <Link to="/dashboard">Dashboard</Link>
+          <Link to="/goals">Goals</Link>
+          <button className="btn btn-ghost" onClick={logout}>
+            Logout
+          </button>
+        </div>
+      </div>
     </nav>
   );
 }

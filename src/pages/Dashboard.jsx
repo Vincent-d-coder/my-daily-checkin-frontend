@@ -5,6 +5,7 @@ import CheckInCard from "../components/CheckInCard";
 export default function Dashboard() {
   const [todayGoal, setTodayGoal] = useState(null);
   const [checkins, setCheckins] = useState([]);
+  const [upcomingGoals, setUpcomingGoals] = useState([]);
   console.log("set checkins");
   console.log(checkins);
 
@@ -14,6 +15,13 @@ export default function Dashboard() {
 
     const checkins = await API.get("/checkin");
     setCheckins(checkins.data);
+    // fetch upcoming goals for sidebar summary
+    try {
+      const goalsRes = await API.get("/goals/upcoming");
+      setUpcomingGoals(goalsRes.data || []);
+    } catch (err) {
+      setUpcomingGoals([]);
+    }
   };
 
   useEffect(() => {
@@ -75,23 +83,85 @@ export default function Dashboard() {
   };
 
   return (
-    <div>
+    <div className="container">
       <h1>Dashboard</h1>
-      <h2>🔥 Current Streak: {calculateStreak(checkins)} days</h2>
-      {todayGoal && (
-        <>
-          <h2>Today's Goal</h2>
-          <p>{todayGoal.title}</p>
-          <p>{todayGoal.task}</p>
-        </>
-      )}
 
-      <button onClick={handleCheckIn}>Check In</button>
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "1fr 420px",
+          gap: 20,
+          alignItems: "start",
+        }}
+      >
+        <div>
+          <div className="card">
+            <h2 style={{ marginTop: 0 }}>
+              🔥 Current Streak: {calculateStreak(checkins)} days
+            </h2>
 
-      <h2>Check-In History</h2>
-      {checkins.map((c) => (
-        <CheckInCard key={c._id} checkin={c} />
-      ))}
+            {todayGoal ? (
+              <div style={{ marginTop: 12 }}>
+                <h3 style={{ margin: "6px 0" }}>{todayGoal.title}</h3>
+                <p style={{ color: "#6b7280" }}>{todayGoal.task}</p>
+              </div>
+            ) : (
+              <div style={{ marginTop: 12, color: "#6b7280" }}>
+                No goal set for today.
+              </div>
+            )}
+
+            <div style={{ marginTop: 16 }}>
+              <button className="btn btn-primary" onClick={handleCheckIn}>
+                Check In
+              </button>
+            </div>
+          </div>
+
+          <div style={{ marginTop: 18 }}>
+            <h2>Check-In History</h2>
+            {checkins.length === 0 && (
+              <p style={{ color: "#6b7280" }}>No check-ins yet.</p>
+            )}
+            {checkins.map((c) => (
+              <CheckInCard key={c._id} checkin={c} />
+            ))}
+          </div>
+          {/* left column intentionally left for main content */}
+        </div>
+
+        <aside>
+          <div className="card" style={{ marginBottom: 12 }}>
+            <h3 style={{ marginTop: 0 }}>Goals Summary</h3>
+            {upcomingGoals.length === 0 && (
+              <p style={{ color: "#6b7280" }}>No upcoming goals.</p>
+            )}
+            <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
+              {upcomingGoals.map((g) => (
+                <li
+                  key={g._id}
+                  style={{
+                    padding: "10px 0",
+                    borderBottom: "1px solid #eef2f7",
+                  }}
+                >
+                  <div style={{ fontWeight: 700 }}>{g.title}</div>
+                  <div style={{ fontSize: 13, color: "#9ca3af" }}>
+                    {new Date(g.date).toDateString()}
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div className="card">
+            <h3 style={{ marginTop: 0 }}>Today's Summary</h3>
+            <p style={{ color: "#6b7280" }}>
+              Quick actions and stats will appear here.
+            </p>
+          </div>
+        </aside>
+      </div>
     </div>
   );
 }

@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 
 export default function GoalCard({ goal, deleteGoal, updateGoal }) {
@@ -12,26 +11,56 @@ export default function GoalCard({ goal, deleteGoal, updateGoal }) {
   };
 
   return (
-    <div style={{ border: "1px solid gray", margin: "10px", padding: "10px" }}>
+    <div className="card">
       {editing ? (
-        <>
-          <input value={title} onChange={(e) => setTitle(e.target.value)} />
-          <input
-            value={location}
-            onChange={(e) => setLocation(e.target.value)}
-          />
-          <button onClick={handleUpdate}>Save</button>
-        </>
+        <div>
+          <div className="form-control">
+            <input
+              className="input"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+            />
+          </div>
+          <div className="form-control">
+            <input
+              className="input"
+              value={location}
+              onChange={(e) => setLocation(e.target.value)}
+            />
+          </div>
+          <div style={{ display: "flex", gap: 8 }}>
+            <button className="btn btn-primary" onClick={handleUpdate}>
+              Save
+            </button>
+            <button className="btn btn-ghost" onClick={() => setEditing(false)}>
+              Cancel
+            </button>
+          </div>
+        </div>
       ) : (
-        <>
-          <h3>{goal.title}</h3>
-          <p>{goal.task}</p>
-          <p>{goal.location}</p>
-        </>
-      )}
+        <div>
+          <h3 style={{ marginTop: 0 }}>{goal.title}</h3>
+          <p style={{ color: "#6b7280" }}>{goal.task}</p>
+          <p style={{ marginTop: 8, fontSize: 13, color: "#9ca3af" }}>
+            {goal.location}
+          </p>
 
-      <button onClick={() => setEditing(!editing)}>Edit</button>
-      <button onClick={() => deleteGoal(goal._id)}>Delete</button>
+          <div style={{ marginTop: 12, display: "flex", gap: 8 }}>
+            <button
+              className="btn btn-primary"
+              onClick={() => setEditing(true)}
+            >
+              Edit
+            </button>
+            <button
+              className="btn btn-ghost"
+              onClick={() => deleteGoal(goal._id)}
+            >
+              Delete
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

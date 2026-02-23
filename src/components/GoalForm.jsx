@@ -17,18 +17,27 @@ export default function GoalForm({ reload }) {
 
   return (
     <form onSubmit={handleSubmit}>
-      <input
-        placeholder="Title"
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-      />
-      <input
-        placeholder="Location"
-        value={location}
-        onChange={(e) => setLocation(e.target.value)}
-      />
+      <div className="form-control">
+        <input
+          className="input"
+          placeholder="Title"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+        />
+      </div>
 
-      <button>Create Goal</button>
+      <div className="form-control">
+        <input
+          className="input"
+          placeholder="Location"
+          value={location}
+          onChange={(e) => setLocation(e.target.value)}
+        />
+      </div>
+
+      <div>
+        <button className="btn btn-primary">Create Goal</button>
+      </div>
     </form>
   );
 }
